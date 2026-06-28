@@ -26,17 +26,18 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      # The document uses engine: knitr, so R + knitr must exist at render time.
-      # The {webr} cells are NOT evaluated here — they run in the browser — so
-      # only knitr is needed (no dplyr/ggplot2/scales in CI). use-public-rspm
-      # pulls a precompiled knitr binary instead of compiling from source.
+      # The document uses engine: knitr, so Quarto's knitr engine must exist at
+      # render time — that means knitr AND rmarkdown (the engine loads rmarkdown
+      # to weave to HTML). The {webr} cells are NOT evaluated here — they run in
+      # the browser — so no dplyr/ggplot2/scales in CI. use-public-rspm pulls
+      # precompiled binaries instead of compiling from source.
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
 
-      - name: Install knitr
-        run: install.packages("knitr")
+      - name: Install render-time R packages
+        run: install.packages(c("knitr", "rmarkdown"))
         shell: Rscript {0}
 
       - name: Render site
