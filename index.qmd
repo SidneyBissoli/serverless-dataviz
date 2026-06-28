@@ -1,0 +1,88 @@
+---
+title: "População residente estimada por UF"
+subtitle: "Exemplo mínimo client-side — R rodando no navegador (webR + Quarto Live)"
+lang: pt
+format:
+  live-html:
+    toc: false
+    webr:
+      packages:
+        - dplyr
+        - ggplot2
+        - scales
+engine: knitr
+resources:
+  - data
+---
+
+{{< include _extensions/r-wasm/live/_knitr.qmd >}}
+
+Este documento é o **entregável 2** do `serverless-dataviz`: uma visualização
+que carrega e roda **inteiramente no navegador**, sem backend. O R é compilado
+para WebAssembly (webR) e executado na máquina de quem abre a página. A rota e
+suas ciladas estão documentadas em `docs/01-panorama-rotas.md`.
+
+Os dados são **estimativas populacionais por Unidade da Federação** (IBGE, SIDRA
+tabela 6579, 2011–2021). O CSV **viaja junto com a página** (ver
+`data/prepare-data.R`); nada é baixado em tempo de execução, porque o WASM não
+abre conexões de rede.
+
+> **Aguarde o runtime carregar** (alguns segundos no primeiro acesso: o
+> navegador baixa o R e os pacotes). Depois, escolha uma UF no seletor — o
+> gráfico é recalculado localmente.
+
+```{webr}
+#| edit: false
+#| echo: false
+#| output: false
+#| autorun: true
+#| define:
+#|   - ufs
+# Load once when the runtime is ready. `pop` stays in the webR session and is
+# reused by the plotting cell below; only `ufs` is exported to OJS (the select).
+library(dplyr)
+library(ggplot2)
+
+# Data ships with the page — read from the WASM virtual filesystem, not the net.
+pop <- read.csv("data/populacao-uf.csv", fileEncoding = "UTF-8")
+
+ufs <- sort(unique(pop$uf))
+```
+
+```{ojs}
+//| echo: false
+// The single control: pick one UF. Feeds the webR cell reactively as `sel_uf`.
+viewof sel_uf = Inputs.select(ufs, {
+  label: "Unidade da Federação:",
+  value: "São Paulo"
+})
+```
+
+```{webr}
+#| edit: false
+#| echo: false
+#| input:
+#|   - sel_uf
+#| fig-width: 8
+#| fig-height: 4.5
+# One chart reacting to one control: the population time series for the picked UF.
+# Brazilian number format is set explicitly (big.mark "." / decimal.mark ","),
+# never via locale — the webR runtime is locale "C" (see panorama, sec. 3.4).
+br_number <- scales::label_number(big.mark = ".", decimal.mark = ",", accuracy = 1)
+
+pop |>
+  filter(uf == sel_uf) |>
+  ggplot(aes(x = ano, y = populacao)) +
+  geom_line(linewidth = 0.8, colour = "#2c7fb8") +
+  geom_point(size = 2, colour = "#2c7fb8") +
+  scale_x_continuous(breaks = sort(unique(pop$ano))) +
+  scale_y_continuous(labels = br_number) +
+  labs(
+    title = "População residente estimada",
+    subtitle = sel_uf,
+    x = "Ano",
+    y = "População",
+    caption = "Fonte: IBGE — SIDRA, tabela 6579 (estimativas 2011–2021)."
+  ) +
+  theme_bw()
+```

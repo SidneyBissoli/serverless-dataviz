@@ -1,0 +1,11 @@
+project:
+  type: website
+  output-dir: _site
+  # Publish only the deliverable. The docs/ and prompts/ markdown are internal
+  # project notes, not pages — keep them out of the public site.
+  render:
+    - index.qmd
+  # Ship .nojekyll inside the published output too, so Pages never runs Jekyll
+  # on the `_`-prefixed asset folders (index_files, _extensions).
+  resources:
+    - .nojekyll
