@@ -121,19 +121,26 @@ GitHub Actions, e o deploy em si.
 
 **Pré-requisito:** exemplo renderizando localmente (Sessão 2).
 
-- [ ] Inicializar repo git (`git init`) e primeiro commit, se ainda não houver.
-- [ ] Criar repositório remoto no GitHub (`gh repo create`) e fazer push.
-- [ ] Definir estratégia de publicação e **especificar todos os configs**:
-  - [ ] `_quarto.yml` com `output-dir` coerente (ex.: `docs/` ou `_site/`).
-  - [ ] `.github/workflows/*.yml` — render do Quarto + deploy no Pages
-        (ou alternativa: render local e commit do `docs/`, mais simples para começar).
-  - [ ] `.gitignore` (evitar versionar artefatos de build indesejados).
-  - [ ] `.nojekyll` se a saída tiver pastas iniciadas por `_` (evita o Jekyll quebrar assets).
-- [ ] Habilitar GitHub Pages no repositório (branch/pasta corretos).
-- [ ] Deploy e **validar a URL pública**: a página carrega e roda inteiramente
+- [x] Inicializar repo git (`git init`) e primeiro commit, se ainda não houver.
+      → `git init -b main`; commit em PT. `_site/`, `.quarto/`, artefatos da raiz ignorados.
+- [x] Criar repositório remoto no GitHub (`gh repo create`) e fazer push.
+      → **público** `SidneyBissoli/serverless-dataviz` (nome confirmado com o usuário).
+- [x] Definir estratégia de publicação e **especificar todos os configs**:
+  - [x] `_quarto.yml` com `output-dir` coerente (ex.: `docs/` ou `_site/`).
+        → `type: website`, `output-dir: _site`, `render: [index.qmd]` (docs/ e prompts/ ficam fora do site), `resources: [.nojekyll]`.
+  - [x] `.github/workflows/*.yml` — render do Quarto + deploy no Pages.
+        → **GitHub Actions** (estratégia travada): build (checkout → quarto setup@v2 → setup-r@v2 → instala knitr **e rmarkdown** → `quarto render`) → deploy (upload-pages-artifact@v3 → deploy-pages@v4).
+  - [x] `.gitignore` (evitar versionar artefatos de build indesejados).
+  - [x] `.nojekyll` se a saída tiver pastas iniciadas por `_` (evita o Jekyll quebrar assets).
+        → na raiz e empacotado no `_site/` via `resources`. (Obs.: o deploy por artefato do Actions já não roda Jekyll; mantido como cinto-e-suspensório.)
+- [x] Habilitar GitHub Pages no repositório (branch/pasta corretos).
+      → source = **GitHub Actions** (`gh api pages -f build_type=workflow`), não branch.
+- [x] Deploy e **validar a URL pública**: a página carrega e roda inteiramente
       no navegador, sem backend. ✅ Critério de sucesso da primeira etapa.
-- [ ] Conferir armadilhas de Pages: caminhos relativos de assets, MIME do `.wasm`,
+      → <https://sidneybissoli.github.io/serverless-dataviz/> validado no Chrome: webR cold-start (~20–30 s), gráfico de São Paulo renderizou; **trocar a UF para Tocantins recalculou o gráfico client-side** (y reescalou de ~42–46 mi para ~1,4–1,6 mi), números no padrão BR. **0 erros de console** após o runtime carregar (os `ufs is not defined` são transitórios do cold-start e somem).
+- [x] Conferir armadilhas de Pages: caminhos relativos de assets, MIME do `.wasm`,
       tamanho/timeout do primeiro load.
+      → Sem 404; `.wasm` servido OK (R rodou); `data/populacao-uf.csv` resolveu no subpath `/serverless-dataviz/` (gráfico tem dado real). 1ª run de CI exigiu 1 ajuste (faltava `rmarkdown` p/ o engine knitr) — corrigido, conforme previsto no handoff.
 
 ---
 
@@ -152,6 +159,7 @@ GitHub Actions, e o deploy em si.
 ## Critério de pronto (Definition of Done) do prompt-01
 
 - [x] Entregável 1 escrito, com recomendação clara de rota. → `docs/01-panorama-rotas.md`
-- [ ] Entregável 2 existindo como arquivos reais e renderizando localmente.
-- [ ] Entregável 3 publicado: URL do GitHub Pages carrega e roda 100% no navegador.
-- [ ] Ciladas de WASM documentadas **antes** de virarem bloqueio.
+- [x] Entregável 2 existindo como arquivos reais e renderizando localmente. → `index.qmd` + `data/`.
+- [x] Entregável 3 publicado: URL do GitHub Pages carrega e roda 100% no navegador.
+      → <https://sidneybissoli.github.io/serverless-dataviz/> (deploy por GitHub Actions).
+- [x] Ciladas de WASM documentadas **antes** de virarem bloqueio. → `docs/01-panorama-rotas.md` seç. 3.3/3.4.
