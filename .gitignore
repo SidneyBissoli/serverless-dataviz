@@ -14,3 +14,6 @@ index.html
 .Ruserdata
 
 **/*.quarto_ipynb
+
+# artefatos renderizados fora de _site (ex.: docs/*.html)
+*.html
