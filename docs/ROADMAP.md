@@ -148,11 +148,11 @@ GitHub Actions, e o deploy em si.
 
 **Plataforma recomendada:** Aplicativo **Chat** — reflexão, sem código.
 
-- [ ] Escrever `docs/02-licoes.md`: o que funcionou, o que quebrou, quais pacotes
-      R caíram no WASM, peso/latência reais.
-- [ ] Registrar a **receita reaproveitável** para embutir essa capacidade nos
-      projetos de pesquisa em R (o objetivo final do sandbox).
-- [ ] Listar próximos experimentos *somente se* agregarem (não inflar escopo).
+- [x] Escrever `docs/02-licoes.md`: o que funcionou, o que quebrou, quais pacotes
+      R caíram no WASM, peso/latência reais. → criado; rota Quarto Live validada ponta a ponta, cilada do `rmarkdown` no CI registrada, números de peso/latência com a ressalva honesta (payload do Web Worker não medido).
+- [x] Registrar a **receita reaproveitável** para embutir essa capacidade nos
+      projetos de pesquisa em R (o objetivo final do sandbox). → seção 5 de `02-licoes.md`: estrutura de arquivos, cabeçalho `live-html`, padrão reativo de 3 células, `_quarto.yml`, CI com `knitr`+`rmarkdown`, Pages = GitHub Actions, checklist transversal.
+- [x] Listar próximos experimentos *somente se* agregarem (não inflar escopo). → 3 sondas ligadas ao objetivo de pesquisa: dashboard com webR, `sf`/coroplético municipal, teto de tamanho do dado (`webr::mount`). Explicitado que nenhuma é pré-requisito — 1º objetivo do sandbox cumprido.
 
 ---
 
